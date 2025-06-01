@@ -1,0 +1,97 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/product.schema.json",
+    "title": "Race",
+    "description": "An automobile race data",
+    "type": "object",
+    "properties": {
+        "race_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique race identifier"
+        },
+        "race_type": {
+            "enum": [
+                "historical",
+                "predicted",
+                "simulated"
+            ],
+            "description": "The race could be any of this types"
+        },
+        "organization": {
+            "const": "F1",
+            "description": "Sport division"
+        },
+        "race_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The race timestamp"
+        },
+        "circuit": {
+            "type": "string",
+            "description": "Name of the circuit"
+        },
+        "lap": {
+            "type": "object",
+            "properties": {
+                "lap_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Unique lap identifier"
+                },
+                "lap_number": {
+                    "type": "number",
+                    "description": "Lap number"
+                },
+                "driver": {
+                    "$ref": "#/$defs/driver"
+                }
+            },
+            "required": [
+                "lap_id",
+                "lap_number",
+                "driver"
+            ]
+        }
+    },
+    "required": [
+        "lap",
+        "circuit",
+        "race_date",
+        "race_id"
+    ],
+    "$defs": {
+        "driver": {
+            "type": "object",
+            "properties": {
+                "driver_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Driver identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Driver's name"
+                },
+                "lap_time": {
+                    "type": [
+                        "number", "null"
+                    ],
+                    "description": "Seconds in which a driver completes a lap"
+                },
+                "sector_times": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "maxItems": 3
+                }
+            },
+            "required": [
+                "driver_id",
+                "lap_time",
+                "sector_times"
+            ]
+        }
+    }
+}

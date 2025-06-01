@@ -1,0 +1,144 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/product.schema.json",
+    "title": "GYM Rutine",
+    "description": "A weekly exercise planning",
+    "type": "object",
+    "properties": {
+        "gym_center": {
+            "type": "string",
+            "description": "Training place"
+        },
+        "rutine_duration": {
+            "type": "object",
+            "properties": {
+                "start_session": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end_session": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "dependencies": {
+                "end_session": [
+                    "start_session"
+                ]
+            },
+            "description": "Duration of the training session"
+        },
+        "week_day": {
+            "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday"
+            ]
+        },
+        "core": {
+            "$ref": "#/$defs/core"
+        },
+        "upper_body": {
+            "$ref": "#/$defs/upper_body"
+        },
+        "lower_body": {
+            "$ref": "#/$defs/lower_body"
+        }
+    },
+    "if": {
+        "week_day": {
+            "anyOf": [
+                {
+                    "const": "monday"
+                },
+                {
+                    "const": "wednesday"
+                },
+                {
+                    "const": "friday"
+                }
+            ]
+        }
+    },
+    "then": {
+        "required": [
+            "core"
+        ]
+    },
+    "required": [
+        "gym_center",
+        "rutine_duration",
+        "week_day"
+    ],
+    "$defs": {
+        "core": {
+            "type": "object",
+            "properties": {
+                "abs": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "obliques": {
+                    "type": "number",
+                    "maximum": 2
+                },
+                "planks": {
+                    "enum": [
+                        "lateral",
+                        "regular",
+                        "militar"
+                    ]
+                }
+            }
+        },
+        "upper_body": {
+            "type": "object",
+            "properties": {
+                "pushups": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "pullups": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 50
+                },
+                "dumbbells": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "maxItems": 5
+                }
+            }
+        },
+        "lower_body": {
+            "type": "object",
+            "properties": {
+                "squats": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "lunges": {
+                    "type": "string",
+                    "enum": [
+                        "forward",
+                        "side",
+                        "reverse"
+                    ]
+                },
+                "deadlifts": {
+                    "type": "boolean",
+                    "description": "Indicates whether deadlifts were performed"
+                }
+            }
+        }
+    }
+}

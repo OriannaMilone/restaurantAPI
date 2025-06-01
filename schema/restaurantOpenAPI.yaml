@@ -1,0 +1,369 @@
+openapi: 3.0.0
+info:
+  title: Tiana's Place
+  version: 0.0.1
+  description: API RESTful para gestión de mesas y reservas de un restaurante
+
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /tables:
+    get:
+      summary: Listar mesas activas
+      operationId: getTable
+      responses:
+        '200':
+          description: Lista de mesas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableList'
+        '404':
+          description: No se encontraron mesas
+    post:
+      summary: Crear nueva mesa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableCreate'
+            examples:
+              mesa:
+                $ref: '#/components/examples/Table'
+      responses:
+        '201':
+          description: Mesa creada
+          headers:
+            Location:
+              description: URL de la nueva mesa
+              schema:
+                type: string
+        '400':
+          description: Petición inválida
+
+  /tables/{tableId}:
+    parameters:
+      - $ref: '#/components/parameters/TableId'
+    get:
+      summary: Obtener datos de una mesa
+      responses:
+        '200':
+          description: Datos de la mesa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+        '404':
+          description: Mesa no encontrada
+    put:
+      summary: Actualizar mesa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableUpdate'
+      responses:
+        '204':
+          description: Mesa actualizada
+        '400':
+          description: Petición inválida
+        '404':
+          description: Mesa no encontrada
+    delete:
+      summary: Eliminar mesa
+      responses:
+        '204':
+          description: Mesa eliminada
+        '404':
+          description: Mesa no encontrada
+
+  /reservations:
+    get:
+      summary: Listar todas las reservas
+      responses:
+        '200':
+          description: Lista de reservas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationList'
+        '404':
+          description: No se encontraron reservas
+    post:
+      summary: Crear reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+      responses:
+        '201':
+          description: Reserva creada
+          headers:
+            Location:
+              description: URL de la nueva reserva
+              schema:
+                type: string
+        '400':
+          description: Petición inválida
+        '404':
+          description: Mesa no encontrada
+
+  /reservations/{reservationId}:
+    parameters:
+      - $ref: '#/components/parameters/ReservationId'
+    get:
+      summary: Obtener reserva
+      responses:
+        '200':
+          description: Detalle de la reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '404':
+          description: Reserva no encontrada
+    put:
+      summary: Actualizar reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationUpdate'
+      responses:
+        '204':
+          description: Reserva actualizada
+        '400':
+          description: Petición inválida
+        '404':
+          description: Reserva no encontrada
+    delete:
+      summary: Cancelar reserva
+      responses:
+        '204':
+          description: Reserva eliminada
+        '404':
+          description: Reserva no encontrada
+
+  /tables/{tableId}/reservations:
+    parameters:
+      - $ref: '#/components/parameters/TableId'
+    get:
+      summary: Listar reservas de una mesa
+      description: Devuelve las reservas que están asociadas a la mesa `{tableId}` e incluye enlaces HATEOAS
+      responses:
+        '200':
+          description: Reservas de la mesa
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/TableReservationsHAL'
+          links:
+            reservationById:
+              $ref: '#/components/links/ReservationById'
+        '404':
+          description: Mesa no encontrada
+    post:
+      summary: Crear reserva para una mesa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+      responses:
+        '201':
+          description: Reserva creada
+          headers:
+            Location:
+              description: URL de la nueva reserva
+              schema:
+                type: string
+        '400':
+          description: Petición inválida
+        '404':
+          description: Mesa no encontrada
+
+components:
+  parameters:
+    TableId:
+      name: tableId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+    ReservationId:
+      name: reservationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+
+  schemas:
+    Id:
+      type: string
+      format: uuid
+      description: Identificador único
+
+    Table:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        capacity:
+          type: integer
+          example: 4
+        location:
+          type: string
+          example: interior
+      required:
+        - id
+        - capacity
+        - location
+
+    TableCreate:
+      type: object
+      properties:
+        capacity:
+          type: integer
+          example: 4
+        location:
+          type: string
+          example: interior
+      required:
+        - capacity
+        - location
+
+    TableUpdate:
+      type: object
+      properties:
+        capacity:
+          type: integer
+          example: 6
+        location:
+          type: string
+          example: terraza
+      required:
+        - capacity
+        - location
+
+    TableList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Table'
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        tableId:
+          $ref: '#/components/schemas/Id'
+        dateTime:
+          type: string
+          format: date-time
+          example: '2025-06-01T20:00:00Z'
+        partySize:
+          type: integer
+          example: 2
+      required:
+        - id
+        - tableId
+        - dateTime
+        - partySize
+
+    ReservationCreate:
+      type: object
+      properties:
+        tableId:
+          $ref: '#/components/schemas/Id'
+        dateTime:
+          type: string
+          format: date-time
+          example: '2025-06-01T20:00:00Z'
+        partySize:
+          type: integer
+          example: 2
+      required:
+        - tableId
+        - dateTime
+        - partySize
+
+    ReservationUpdate:
+      type: object
+      properties:
+        dateTime:
+          type: string
+          format: date-time
+          example: '2025-06-02T19:00:00Z'
+        partySize:
+          type: integer
+          example: 3
+      required:
+        - dateTime
+        - partySize
+
+    ReservationList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Reservation'
+
+    TableReservationsHAL:
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+            table:
+              type: object
+              properties:
+                href:
+                  type: string
+        _embedded:
+          type: object
+          properties:
+            reservations:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Reservation'
+                  - type: object
+                    properties:
+                      _links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          cancel:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                              method:
+                                type: string
+
+  examples:
+    Table:
+      value:
+        capacity: 5
+        location: interior garden
+
+  links:
+    ReservationById:
+      description: Obtener cada reserva por su ID
+      operationId: getReservationById
+      parameters:
+        reservationId: '$response.body#/id'

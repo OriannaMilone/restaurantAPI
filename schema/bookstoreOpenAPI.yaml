@@ -1,0 +1,140 @@
+openapi: 3.0.1
+info:
+  title: Book Store
+  version: 0.0.1
+  description: Orianna's books collection
+paths:
+  /books:
+    get:
+      summary: All Books
+      description: Lists the books in the collection
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/books'
+              examples:
+                objectExample:
+                  $ref: '#/components/examples/books'
+        '400':
+          description: Error fetching the books.
+    post:
+      summary: Add a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/books'
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: Error in the request.
+  /books/{id}:
+    parameters:
+    - $ref: '#/components/parameters/id'
+    get:
+      summary: Get a book
+      description: List an specific book
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/book'
+        '404':
+          description: Invalid ID
+    put:
+      summary: Update a book
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/book'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid request.
+    delete:
+      summary: null
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/book'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid request.
+servers:
+- url: http://localhost:3000/
+components:
+  parameters:
+    id:
+      description: Book's identificator
+      name: book id
+      in: path
+      require: true
+      schema:
+        $ref: '#/components/schemas/id'
+  schemas:
+    id:
+      type: string
+      format: uuid
+      description: a unique book identifier
+    book:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+          description: a unique book identifier
+        title:
+          type: string
+          description: book's name
+        author:
+          type: string
+          description: book's writer
+        pages:
+          type: number
+          description: book's pages
+        chapters:
+          type: array
+          items:
+            type: string
+        required:
+        - _id
+        - title
+        - author
+    books:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+          description: a unique book identifier
+        title:
+          type: string
+          description: book's name
+        author:
+          type: string
+          description: book's writer
+        required:
+        - _id
+        - title
+        - author
+  examples:
+    books:
+      _id: 150e8400-e29b-41d4-a716-446655440009
+      title: The Martian
+      author: Andy Weir

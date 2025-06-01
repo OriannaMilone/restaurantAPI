@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info: 
+  title: Cine
+  description: API de peliculas y sesiones 
+  version: 0.0.1
+paths:
+  /peliculas:
+    get:
+      summary: Lista Peliculas 
+      description: Lista todas las peliculas disponibles
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/peliculas'
+      responses:
+          "200": 
+            description: OK.
+          "400":
+            description: Error. Solicitud Invalida.
+          "404":
+            description: Error. No encontrado.
+    post: 
+      summary: Agrega Peliculas
+      description: Agrega una Pelicula a la lista.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/pelicula'
+            examples:
+              example:
+                $ref: '#/components/examples/pelicula'
+      responses: 
+        "201": 
+          description: Pelicula Agregada
+        "400": 
+          description: Error. Solicitud Invalida.
+        "409":
+          description: Error.
+  /peliculas/{id}:
+      parameters: 
+        schema:
+          $ref: '#/components/schemas/id'
+      put:
+        summary: Actualizar una pelicula
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: 
+              $ref: '#/components/schemas/pelicula'
+            exampleObject:
+              $ref: '#/components/examples/pelicula'
+        responses:
+          "201":
+            description: Pelicula Actualizada
+          "400": 
+            description: Error. Solicitud Invalida.
+          "404":
+            description: Error. 
+      delete: 
+        summary: Borrar una pelicula
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: 
+              $ref: '#/components/schemas/pelicula'
+            exampleObject:
+              $ref: '#/components/examples/pelicula'
+        responses:
+          "204": 
+            description: OK
+          "404":
+            description: Error. 
+servers: 
+ - url: 'http://localhost:3000/api/cine'
+components:
+  schemas:
+    id: 
+      type: string
+      format: uuid
+      description: Identificador único de peliculas
+    peliculas:
+      type: array
+      description: Una lista de peliculas
+      items: 
+          $ref: '#/components/schemas/pelicula'
+    pelicula:
+      type: object
+      properties: 
+        id: 
+          $ref: '#/components/schemas/id'
+        title:
+          type: string
+        duration:
+          type: number
+          description: Durations in minutes  
+        director: 
+          type: string
+  examples:
+    pelicula:
+      value: 
+        id: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+        title: Capitan América 2
+        duration: 140 
+        director: Los hermanos Russo
+                
+
