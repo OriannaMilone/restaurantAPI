@@ -53,7 +53,7 @@ router.delete('/:id', async (req, res) => {
   res.status(204).send();
 });
 
-// Dentro de routes/tables.js
+
 router.get('/:id/reservations', async (req, res) => {
   const db = dbo.getDb();
   const tableId = req.params.id;
@@ -63,7 +63,6 @@ router.get('/:id/reservations', async (req, res) => {
 
   if (!result.length) return res.status(404).send('No se encontraron reservas para esta mesa');
 
-  // Opcional: incluir links HATEOAS
   const formatted = result.map(r => ({
     ...r,
     _links: {
